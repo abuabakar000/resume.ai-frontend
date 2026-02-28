@@ -8,7 +8,7 @@ import Modern from './templates/Modern';
 import Sidebar from './templates/Sidebar';
 import Executive from './templates/Executive';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE = (import.meta.env.VITE_API_URL || 'https://resume-ai-backend-mu.vercel.app/api').replace(/\/$/, '');
 const SECTIONS = ['Header', 'Education', 'Skills', 'Experience', 'Additional Details', 'Summary'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const YEARS = Array.from({ length: 50 }, (_, i) => (new Date().getFullYear() - i).toString());
