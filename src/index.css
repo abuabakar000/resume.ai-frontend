@@ -545,6 +545,7 @@ body {
   height: 297mm;
   transform-origin: top left;
   background: white;
+  flex-shrink: 0;
 }
 
 .resume-container::-webkit-scrollbar {
@@ -714,6 +715,17 @@ body {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   transform-origin: top center;
   cursor: default;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.close-zoom {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1100;
+  background: white !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* Image Upload Area */
@@ -789,14 +801,36 @@ label {
 input,
 select,
 textarea {
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1.125rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 1rem;
   font-family: inherit;
   background: #ffffff;
   transition: all 0.2s;
   width: 100%;
+  color: var(--text);
+}
+
+textarea {
+  min-height: 120px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+@media (max-width: 768px) {
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    /* Prevents iOS auto-zoom on focus */
+    padding: 1rem;
+  }
+
+  textarea {
+    min-height: 150px;
+  }
 }
 
 input:focus,
@@ -1031,12 +1065,33 @@ textarea:focus {
   }
 
   .resume-container {
-    transform: scale(0.4) !important;
+    transform: scale(var(--preview-scale, 0.4)) !important;
     transform-origin: top center;
     position: relative;
     left: 50%;
     margin-left: -105mm;
-    /* Half of 210mm */
+  }
+
+  .zoom-overlay {
+    padding: 0;
+    align-items: flex-start;
+    display: flex;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+
+  .zoom-content {
+    flex-shrink: 0;
+    /* Keep 210mm width to prevent content clipping */
+    width: 210mm;
+    min-width: 210mm;
+    transform-origin: top center;
+    margin-top: 2rem;
+  }
+
+  .close-zoom {
+    top: 1rem;
+    right: 1rem;
   }
 
   .form-grid {

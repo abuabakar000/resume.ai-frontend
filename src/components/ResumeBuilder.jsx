@@ -366,6 +366,7 @@ function ResumeBuilder() {
     }, [currentSection]);
 
     const [previewScale, setPreviewScale] = useState(0.33);
+    const [zoomScale, setZoomScale] = useState(1);
 
     const handleHomeNavigation = (e) => {
         if (hasUnsavedData()) {
@@ -379,11 +380,27 @@ function ResumeBuilder() {
     useEffect(() => {
         const updateScale = () => {
             const width = window.innerWidth;
-            if (width <= 1024) {
-                setPreviewScale(Math.min(0.4, (width - 40) / 210 / 4.5));
+            let pScale, zScale;
+
+            if (width <= 768) {
+                // Mobile
+                pScale = (width - 20) / 794;
+                zScale = width / 794;
+            } else if (width <= 1024) {
+                // Tablet
+                pScale = (width - 80) / 794;
+                zScale = (width - 40) / 794;
             } else {
-                setPreviewScale(280 / 794);
+                // Desktop
+                pScale = 280 / 794;
+                zScale = Math.min(1, (window.innerHeight - 60) / 1123);
             }
+
+            setPreviewScale(pScale);
+            setZoomScale(zScale);
+
+            document.documentElement.style.setProperty('--preview-scale', pScale);
+            document.documentElement.style.setProperty('--zoom-scale', zScale);
         };
         window.addEventListener('resize', updateScale);
         updateScale();
@@ -711,7 +728,7 @@ function ResumeBuilder() {
                                         <label>Responsibilities</label>
                                         {exp.bullets.map((bullet, idx) => (
                                             <div key={idx} style={{ marginBottom: '1.5rem' }}>
-                                                <textarea value={bullet} onChange={e => updateBullet(exp.id, idx, e.target.value)} rows={2} />
+                                                <textarea value={bullet} onChange={e => updateBullet(exp.id, idx, e.target.value)} rows={3} />
                                                 <button className="btn btn-ai" onClick={() => improveBullet(exp.id, idx)} disabled={loading[`bullet-${exp.id}-${idx}`]} style={{ marginTop: '0.5rem' }}>
                                                     <Zap size={14} fill="currentColor" /> {loading[`bullet-${exp.id}-${idx}`] ? 'Optimizing...' : 'Improve with AI'}
                                                 </button>
@@ -765,7 +782,7 @@ function ResumeBuilder() {
                                                     ...prev,
                                                     additionalDetails: prev.additionalDetails.map(d => d.id === detail.id ? { ...d, content: e.target.value } : d)
                                                 }))}
-                                                rows={4}
+                                                rows={6}
                                                 placeholder="Enter details here..."
                                             />
                                             <button className="btn btn-ai" onClick={() => improveDetail(detail.id)} disabled={loading[`detail-${detail.id}`]} style={{ marginTop: '0.5rem' }}>
@@ -922,11 +939,14 @@ function ResumeBuilder() {
                     >
                         <motion.div
                             className="zoom-content"
-                            initial={{ scale: 0.8, y: 50 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.8, y: 50 }}
+                            initial={{ scale: zoomScale * 0.8, y: 50 }}
+                            animate={{ scale: zoomScale, y: 0 }}
+                            exit={{ scale: zoomScale * 0.8, y: 50 }}
                             onClick={(e) => e.stopPropagation()}
                         >
+                            <button className="btn btn-ghost btn-icon close-zoom" onClick={() => setZoom(false)}>
+                                <X size={24} />
+                            </button>
                             <Template data={templateData} activeSection={SECTIONS[currentSection]} />
                         </motion.div>
                     </motion.div>
